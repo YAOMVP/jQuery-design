@@ -1,8 +1,8 @@
 let gamePattern
-let userClickedPattern
-let isStarted = true;
+let userClickedPattern;
+let userChosenColor;
+let isStarted = false;
 let index = -1;
-let isEnded = false;
 let level = 1; //h1 level
 
 //😊1.Generate a new random number between 0 and 3.
@@ -18,17 +18,23 @@ $(function() {
     //1. Edit the title from start to level 1;
     //2.execute the flashAnimate, playSound anmiate, and the animatePressed.
     function startGame() {
+        // isStarted = true;
         if (isStarted) {
+            // gamePattern = [];
+            // userClickedPattern = [];
+            // level = 1;
+            // $("#level-title").html(`level ${level}`);
+            // nextSequence();
+        } else {
+            isStarted = true;
             gamePattern = [];
             userClickedPattern = [];
             level = 1;
             $("#level-title").html(`level ${level}`);
             nextSequence();
-        } else {
-
         }
     }
-
+    //startGame();
     //😊Get gamePattern function:
     //1.Generate a new random number between 0 and 3.
     //2.Use the randomNumber to select a random color from the buttonColors.
@@ -38,7 +44,7 @@ $(function() {
         let randomNumber = 0;
         let buttonColors = ["red", "blue", "green", "yellow"];
         let randomChosenColor = "";
-        let userChosenColour = "";
+        userChosenColor = "";
         randomNumber = Math.floor(Math.random() * 4);
         randomChosenColor = buttonColors[randomNumber];
         gamePattern.push(randomChosenColor);
@@ -49,21 +55,19 @@ $(function() {
 
 
     //😊Press any key to start the game:
+
     $("body").keyup(function(e) {
-        // console.log(e.key);
+        // consojle.log(e.key);
+        // isStarted = true;
+        if (isStarted) {
 
-        startGame();
-        isStarted = false;
-
-        // console.log("自动" + gamePattern);
-        if (isEnded) {
-            isStarted = true;
-            startGame();
-            isStarted = false;
-            isEnded = false;
         } else {
+            startGame();
 
         }
+
+        // console.log("自动" + gamePattern);
+
     })
 
 
@@ -76,42 +80,49 @@ $(function() {
     //4.Remove all the items in userClickedPattern
     $(".btn").click(function() {
         userChosenColor = (this.id);
-        userClickedPattern.push(userChosenColor);
-        console.log("点击" + userClickedPattern);
-        // flashAnimation(userChosenColor);
-        playSound(userChosenColor);
-        animatePressed(userChosenColor);
+
+        if (isStarted) {
+            userClickedPattern.push(userChosenColor);
+            console.log("点击" + userClickedPattern);
+            // flashAnimation(userChosenColor);
+            playSound(userChosenColor);
+            animatePressed(userChosenColor);
 
 
-        if (isEqual()) {
-            if (gamePattern.length === userClickedPattern.length) {
-                //After one second, start the next level. 
-                setTimeout(function() {
-                    level++;
-                    $("#level-title").html(`level ${level}`);
-                    nextSequence();
-                }, 1000);
-                console.log("自动" + gamePattern);
-                userClickedPattern = [];
-                index = -1;
+            if (isEqual()) {
+                if (gamePattern.length === userClickedPattern.length) {
+                    //After one second, start the next level. 
+                    setTimeout(function() {
+                        level++;
+                        $("#level-title").html(`level ${level}`);
+                        nextSequence();
+                    }, 1000);
+                    console.log("自动" + gamePattern);
+                    userClickedPattern = [];
+                    index = -1;
+                } else {
+
+                }
             } else {
-
+                gameOver();
+                playSound(userChosenColor);
+                animatePressed(userChosenColor);
+                isStarted = false;
             }
         } else {
             gameOver();
+            playSound(userChosenColor);
+            animatePressed(userChosenColor);
         }
-
-
     })
 
     //😊Check the correct answer function:
     function isEqual() {
         index++;
         if (userClickedPattern[index] === gamePattern[index]) {
-
             return true;
         } else {
-            gameOver();
+            return false;
         }
     }
 
@@ -151,9 +162,8 @@ $(function() {
         $("#level-title").html("Game Over, Press Any Key to Restart");
         let gameOverSound = new Audio("./sounds/wrong.mp3");
         gameOverSound.play();
-        userClickedPattern = [];
-        gamePattern = [];
-        isEnded = true;
+
+
     }
 
 
